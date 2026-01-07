@@ -196,7 +196,7 @@ export default function PostListing() {
                   name="propertyType"
                   value={selection.propertyType}
                   onChange={handleSelectionChange}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[14px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
                 >
                   <option value="Apartment">Apartment</option>
                   <option value="House">House</option>
@@ -215,7 +215,7 @@ export default function PostListing() {
                   name="stayType"
                   value={selection.stayType}
                   onChange={handleSelectionChange}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[14px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
                 >
                   <option value="Private Room">Private Room</option>
                   <option value="Shared Room">Shared Room</option>
@@ -232,7 +232,7 @@ export default function PostListing() {
                   name="roomType"
                   value={selection.roomType}
                   onChange={handleSelectionChange}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[14px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none appearance-none hover:bg-zinc-100 transition-colors"
                 >
                   <option value="1bed/1bath">1bed/1bath</option>
                   <option value="2bed/1bath">2bed/1bath</option>
@@ -272,7 +272,7 @@ export default function PostListing() {
                     handleChange(e);
                     setShowAreaSuggestions(true);
                   }}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl pl-10 pr-4 py-3 text-[14px] font-bold outline-none placeholder:text-zinc-300 focus:bg-white focus:border-blue-200 transition-all shadow-sm"
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl pl-10 pr-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300 focus:bg-white focus:border-blue-200 transition-all shadow-sm"
                 />
               </div>
 
@@ -296,7 +296,7 @@ export default function PostListing() {
                       <div className="flex items-center gap-3">
                         <MapPin size={16} className="text-zinc-300 group-hover:text-blue-500 transition-colors" />
                         <div>
-                          <p className="font-bold text-[14px] text-zinc-800">{item.area}</p>
+                          <p className="font-bold text-[16px] text-zinc-800">{item.area}</p>
                           <p className="text-[11px] text-zinc-400 font-medium uppercase tracking-wider">Around {item.city}</p>
                         </div>
                       </div>
@@ -314,7 +314,7 @@ export default function PostListing() {
               placeholder="Details of the room (Rent, Move-in date, Utilities, Rules, etc.)"
               value={formData.description}
               onChange={handleChange}
-              className="w-full text-[14px] placeholder:text-zinc-300 outline-none border border-zinc-100 bg-zinc-50 rounded-2xl p-4 leading-relaxed font-medium resize-none shadow-sm"
+              className="w-full text-[16px] placeholder:text-zinc-300 outline-none border border-zinc-100 bg-zinc-50 rounded-2xl p-4 leading-relaxed font-medium resize-none shadow-sm"
             ></textarea>
           </div>
         </div>
@@ -334,7 +334,7 @@ export default function PostListing() {
               placeholder="Where should they reach you?"
               value={formData.contact_email}
               onChange={handleChange}
-              className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[14px] font-bold outline-none placeholder:text-zinc-300"
+              className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
             />
           </div>
         </div>

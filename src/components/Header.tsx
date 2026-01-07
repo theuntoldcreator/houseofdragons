@@ -23,7 +23,7 @@ export default function Header({ selectedArea, availableAreas, onAreaChange }: H
                     <select
                         value={selectedArea}
                         onChange={(e) => onAreaChange(e.target.value)}
-                        className="appearance-none pl-4 pr-10 py-2 rounded-xl text-[13px] font-bold bg-zinc-50 border border-zinc-100 text-zinc-800 hover:border-zinc-300 transition-all outline-none shadow-sm min-w-[140px]"
+                        className="appearance-none pl-4 pr-10 py-2 rounded-xl text-[16px] font-bold bg-zinc-50 border border-zinc-100 text-zinc-800 hover:border-zinc-300 transition-all outline-none shadow-sm min-w-[140px]"
                     >
                         <option value="All Areas">All Areas</option>
                         {availableAreas.map((area) => (
