@@ -1,41 +1,64 @@
-
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, PlusSquare, Mail, User } from 'lucide-react';
+import { Home, Search, PlusSquare, Info, MapPin } from 'lucide-react';
 
-export default function BottomNav() {
+interface BottomNavProps {
+    selectedCity: string | null;
+    onLocationClick: () => void;
+}
+
+export default function BottomNav({ selectedCity, onLocationClick }: BottomNavProps) {
     const location = useLocation();
-
-    const isActive = (path: string) => location.pathname === path;
 
     const navItems = [
         { icon: Home, label: 'Home', path: '/' },
         { icon: Search, label: 'Search', path: '/listings' },
         { icon: PlusSquare, label: 'Post', path: '/post' },
-        { icon: Mail, label: 'Inbox', path: '/contact' },
-        { icon: User, label: 'Profile', path: '/profile' },
+        { icon: MapPin, label: selectedCity || 'City', isLocation: true },
+        { icon: Info, label: 'Contact', path: '/contact' },
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 w-full h-[64px] bg-white/80 backdrop-blur-xl border-t border-gray-100 z-50 flex justify-around items-center px-2">
-            {navItems.map((item) => (
-                <Link
-                    key={item.path}
-                    to={item.path}
-                    className="flex flex-col items-center justify-center grow h-full relative"
-                >
-                    <item.icon
-                        size={24}
-                        strokeWidth={isActive(item.path) ? 2.5 : 1.5}
-                        className={`transition-all duration-200 ${isActive(item.path) ? 'text-black scale-110' : 'text-zinc-400 hover:text-black'}`}
-                    />
-                    <span className={`text-[10px] mt-1 font-medium transition-colors ${isActive(item.path) ? 'text-black' : 'text-zinc-400'}`}>
-                        {item.label}
-                    </span>
-                    {isActive(item.path) && (
-                        <div className="absolute bottom-0 w-1 h-1 bg-black rounded-full" />
-                    )}
-                </Link>
-            ))}
+        <nav className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-zinc-100 flex items-center justify-around h-[72px] px-2 z-50 lg:hidden safe-area-bottom">
+            {navItems.map((item) => {
+                const isActive = !item.isLocation && location.pathname === item.path;
+
+                const content = (
+                    <div className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all ${isActive || item.isLocation ? 'text-black' : 'text-zinc-400'
+                        }`}>
+                        <item.icon
+                            size={20}
+                            strokeWidth={isActive || item.isLocation ? 2.5 : 2}
+                            className={isActive ? 'scale-110' : 'scale-100'}
+                        />
+                        <span className={`text-[9px] font-black uppercase tracking-widest truncate max-w-[60px] ${isActive || item.isLocation ? 'opacity-100' : 'opacity-60'
+                            }`}>
+                            {item.label}
+                        </span>
+                    </div>
+                );
+
+                if (item.isLocation) {
+                    return (
+                        <button
+                            key="location"
+                            onClick={onLocationClick}
+                            className="flex-1 h-full"
+                        >
+                            {content}
+                        </button>
+                    );
+                }
+
+                return (
+                    <Link
+                        key={item.label}
+                        to={item.path!}
+                        className="flex-1 h-full"
+                    >
+                        {content}
+                    </Link>
+                );
+            })}
         </nav>
     );
 }

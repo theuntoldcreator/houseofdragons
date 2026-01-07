@@ -9,9 +9,12 @@ interface HeaderProps {
 export default function Header({ selectedArea, availableAreas, onAreaChange }: HeaderProps) {
     return (
         <header className="fixed top-0 left-0 w-full h-[64px] bg-white/90 backdrop-blur-xl border-b border-zinc-100 z-50 flex items-center justify-between px-5">
-            <div className="flex items-center">
-                <Link to="/" className="bg-[#ff6b00] text-white font-black px-2 py-1.5 rounded-[8px] text-[12px] leading-tight uppercase tracking-tight hover:opacity-90 transition-opacity">
-                    NRI<br />Everything
+            <div className="flex items-center gap-3">
+                <Link to="/" className="flex items-center gap-2 group">
+                    <img src="/logo.jpg" alt="NRI Everything Logo" className="w-10 h-10 rounded-full object-cover border-2 border-[#ff6b00] group-hover:scale-105 transition-transform" />
+                    <div className="bg-[#ff6b00] text-white font-black px-2 py-1.5 rounded-[8px] text-[12px] leading-tight uppercase tracking-tight group-hover:opacity-90 transition-opacity">
+                        NRI<br />Everything
+                    </div>
                 </Link>
             </div>
 

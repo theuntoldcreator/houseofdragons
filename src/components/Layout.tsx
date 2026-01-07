@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import LocationModal from './LocationModal';
 import Sidebar from './Sidebar';
+import BottomNav from './BottomNav';
 import { supabase } from '../lib/supabase';
 
 export default function Layout() {
@@ -69,10 +70,15 @@ export default function Layout() {
             />
 
             <div className="lg:pl-[240px]">
-                <main className="w-full max-w-[570px] mx-auto pt-[64px] pb-[80px]">
+                <main className="w-full max-w-[570px] mx-auto pt-[64px] pb-[90px] lg:pb-[80px]">
                     <Outlet context={{ selectedCity, selectedArea, setSelectedArea }} />
                 </main>
             </div>
+
+            <BottomNav
+                selectedCity={selectedCity}
+                onLocationClick={() => setIsLocationModalOpen(true)}
+            />
         </div>
     );
 }

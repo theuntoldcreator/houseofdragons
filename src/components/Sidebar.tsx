@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, PlusSquare, MapPin, Info } from 'lucide-react';
+import { Home, Search, PlusSquare, MapPin, User, Settings, Info } from 'lucide-react';
 
 interface SidebarProps {
     selectedCity: string | null;
