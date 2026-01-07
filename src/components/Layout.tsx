@@ -63,7 +63,6 @@ export default function Layout() {
             />
 
             <Header
-                selectedCity={selectedCity}
                 selectedArea={selectedArea}
                 availableAreas={availableAreas}
                 onAreaChange={setSelectedArea}

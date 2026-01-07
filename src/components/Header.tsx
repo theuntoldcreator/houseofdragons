@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
-import { useMemo } from 'react';
 interface HeaderProps {
-    selectedCity: string | null;
     selectedArea: string;
     availableAreas: string[];
     onAreaChange: (area: string) => void;
 }
 
-export default function Header({ selectedCity, selectedArea, availableAreas, onAreaChange }: HeaderProps) {
+export default function Header({ selectedArea, availableAreas, onAreaChange }: HeaderProps) {
     return (
         <header className="fixed top-0 left-0 w-full h-[64px] bg-white/90 backdrop-blur-xl border-b border-zinc-100 z-50 flex items-center justify-between px-5">
             <div className="flex items-center">
