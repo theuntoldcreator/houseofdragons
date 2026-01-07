@@ -93,19 +93,38 @@ export default function Home() {
     }
   };
 
+  const [viewerCount, setViewerCount] = useState(Math.floor(Math.random() * (750 - 450 + 1) + 450));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setViewerCount(prev => {
+        const change = Math.floor(Math.random() * 7) - 3;
+        const newValue = prev + change;
+        return newValue > 400 ? newValue : 400;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   if (!selectedCity) return null;
 
   return (
     <div className="divide-y divide-zinc-100 page-enter">
       <div className="px-5 py-8 border-b border-zinc-50">
         <h1 className="text-[28px] font-black text-[#101010] leading-tight flex items-baseline gap-2">
-          RoomShare
-          <span className="text-[14px] font-bold text-zinc-400 font-sans tracking-normal bg-zinc-50 px-2 py-0.5 rounded-md border border-zinc-100">
+          NRI Everything
+          <span className="text-[14px] font-bold text-zinc-400 font-sans tracking-normal bg-zinc-50 px-2 py-0.5 rounded-md border border-zinc-100 uppercase">
             {selectedCity && `Around ${selectedCity}`}
           </span>
         </h1>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+        <div className="flex flex-col mt-2">
           <p className="text-secondary text-[15px] font-medium italic">Latest accommodation posts around you</p>
+          <div className="flex items-center gap-1.5 mt-2 transition-all duration-1000">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+            <p className="text-zinc-400 text-[12px] font-bold tracking-tight">
+              <span className="tabular-nums">{viewerCount.toLocaleString()}</span> PEOPLE VIEWING RIGHT NOW
+            </p>
+          </div>
         </div>
       </div>
 
