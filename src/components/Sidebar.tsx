@@ -19,13 +19,8 @@ export default function Sidebar({ selectedCity, onLocationClick }: SidebarProps)
 
     return (
         <aside className="fixed left-0 top-0 h-full w-[240px] bg-white border-r border-zinc-100 hidden lg:flex flex-col p-6 z-40">
-            <div className="mb-10">
-                <Link to="/" className="flex items-center gap-3 group">
-                    <img src="/logo.jpg" alt="NRI Everything Logo" className="w-12 h-12 rounded-full object-cover border-2 border-[#ff6b00] group-hover:scale-105 transition-transform" />
-                    <div className="bg-[#ff6b00] text-white font-black px-2.5 py-2 rounded-[10px] text-[14px] leading-tight uppercase tracking-tight group-hover:opacity-90 transition-opacity">
-                        NRI<br />Everything
-                    </div>
-                </Link>
+            <div className="mb-6 lg:mb-10">
+                {/* Brand name removed as requested */}
             </div>
 
             <nav className="flex-1 space-y-1">
