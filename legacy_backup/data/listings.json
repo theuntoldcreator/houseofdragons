@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1709845600000,
+    "title": "1 BR in 2B/2B condo near Frisco",
+    "category": "Available Rooms",
+    "city": "Frisco",
+    "description": "Spacious bedroom with private bath available in a 2B/2B condo. Close to Stonebriar Mall. Utilities included.",
+    "contactName": "Rahul",
+    "contactEmail": "rahul@example.com",
+    "postedDate": "2024-03-07T10:00:00.000Z"
+  },
+  {
+    "id": 1709756600000,
+    "title": "Looking for female roommate - Denton",
+    "category": "Roommates Wanted",
+    "city": "Denton",
+    "description": "Master bedroom available for sharing in a 3B/2B apartment near UNT. Bus route nearby.",
+    "contactName": "Priya",
+    "contactEmail": "priya@example.com",
+    "postedDate": "2024-03-06T15:30:00.000Z"
+  },
+  {
+    "title": "Accommodation Available for 2b/2b in Denton",
+    "description": "Accommodation available for 2 people in denton",
+    "city": "Razor Ranch, Denton",
+    "category": "Available Rooms",
+    "contactName": "Pavan",
+    "contactEmail": "pavan@gmail.com",
+    "id": 1767743098608,
+    "postedDate": "2026-01-06T23:44:58.608Z"
+  },
+  {
+    "title": "Accomdation at oaks of denton",
+    "description": "Room available for 1b/1b for a couple",
+    "city": "Oaks Of Denton",
+    "category": "Have Accommodation 🏠",
+    "contactName": "Sai",
+    "contactEmail": "sai@gmail.com",
+    "id": 1767743901525,
+    "postedDate": "2026-01-06T23:58:21.525Z"
+  },
+  {
+    "title": "Need a room near campus",
+    "description": "I'm looking for a private room with shared bathroom.",
+    "city": "Denton, TX",
+    "category": "Need Accommodation 🔍",
+    "contactName": "John Doe",
+    "contactEmail": "john@example.com",
+    "id": 1767744155223,
+    "postedDate": "2026-01-07T00:02:35.223Z"
+  },
+  {
+    "category": "Have Accommodation 🏠",
+    "title": "1 Bed Apt",
+    "description": "Valid description",
+    "city": "Denton",
+    "price": "",
+    "contactName": "Test User",
+    "contactInfo": "test@example.com",
+    "id": 1767750599853,
+    "postedDate": "2026-01-07T01:49:59.853Z"
+  },
+  {
+    "title": "Test",
+    "description": "Test",
+    "contactInfo": "test@example.com",
+    "category": "Have",
+    "id": 1767750610559,
+    "postedDate": "2026-01-07T01:50:10.559Z"
+  }
+]
