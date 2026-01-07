@@ -94,17 +94,51 @@ export default function Home() {
   };
 
   const [viewerCount, setViewerCount] = useState(Math.floor(Math.random() * (750 - 450 + 1) + 450));
+  const [sessionStartTime] = useState(Date.now());
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const updateCount = () => {
       setViewerCount(prev => {
-        const change = Math.floor(Math.random() * 7) - 3;
+        const minutesElapsed = (Date.now() - sessionStartTime) / 60000;
+        const isLongSession = minutesElapsed >= 10;
+        const isMegaSpikePossible = Math.random() > 0.98; // Very rare "Telegram Burst"
+
+        let change = 0;
+        const randomSign = Math.random() > 0.4 ? 1 : -1; // Slight bias towards growth
+
+        if (isMegaSpikePossible) {
+          // rare "Telegram Burst" spike as requested
+          change = Math.floor(Math.random() * 200) + 800; // Increase by 800-1000
+        } else if (isLongSession && Math.random() > 0.7) {
+          // Standard traffic wave after 10 mins
+          change = randomSign * (Math.floor(Math.random() * 5) + 12); // 12-16
+        } else {
+          // Organic micro-drift
+          change = randomSign * (Math.floor(Math.random() * 2) + 2); // 2 or 3
+        }
+
         const newValue = prev + change;
-        return newValue > 400 ? newValue : 400;
+
+        // Realistic bounds based on user's 5k telegram community
+        const MIN_VIEWERS = 400;
+        const MAX_VIEWERS = 5500;
+
+        if (newValue < MIN_VIEWERS) return prev + Math.abs(change);
+        if (newValue > MAX_VIEWERS) return prev - Math.abs(change);
+        return newValue;
       });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+
+      // Slower updates: Randomize between 5 and 15 seconds as requested
+      const nextDelay = Math.floor(Math.random() * 10000) + 5000;
+      timeoutId = setTimeout(updateCount, nextDelay);
+    };
+
+    // Initial delay before activity starts
+    timeoutId = setTimeout(updateCount, 8000);
+    return () => clearTimeout(timeoutId);
+  }, [sessionStartTime]);
 
   if (!selectedCity) return null;
 
@@ -119,10 +153,10 @@ export default function Home() {
         </h1>
         <div className="flex flex-col mt-2">
           <p className="text-secondary text-[15px] font-medium italic">Latest accommodation posts around you</p>
-          <div className="flex items-center gap-1.5 mt-2 transition-all duration-1000">
+          <div className="flex items-center gap-1.5 mt-2">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
             <p className="text-zinc-400 text-[12px] font-bold tracking-tight">
-              <span className="tabular-nums">{viewerCount.toLocaleString()}</span> PEOPLE VIEWING RIGHT NOW
+              <span className="tabular-nums transition-all duration-500">{viewerCount.toLocaleString()}</span> PEOPLE VIEWING RIGHT NOW
             </p>
           </div>
         </div>
