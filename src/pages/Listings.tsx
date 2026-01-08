@@ -15,6 +15,8 @@ interface Listing {
   contact_name: string;
   contact_email: string;
   telegram_username?: string;
+  contact_info?: string;
+  preferred_contact?: string;
   created_at: string;
   views?: number;
 }
@@ -30,6 +32,7 @@ export default function Listings() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isPending, startTransition] = useTransition();
+  const [newListingIds, setNewListingIds] = useState<Set<number>>(new Set());
 
   // Simple debounce logic
   useEffect(() => {
@@ -42,43 +45,49 @@ export default function Listings() {
   }, [searchTerm]);
 
   useEffect(() => {
-    if (selectedCity) fetchListings();
-  }, [selectedCity]);
+    fetchListings();
+  }, []);
 
-  // Delta Polling every 3 minutes
+  // Delta Polling every 1 second
   useEffect(() => {
-    if (!selectedCity) return;
-
     const interval = setInterval(() => {
       pollNewListings();
-    }, 15000); // 15 seconds
+    }, 1000); // 1 second as requested
 
     return () => clearInterval(interval);
-  }, [selectedCity, listings]);
+  }, [listings]);
 
   const pollNewListings = async () => {
-    if (!selectedCity || listings.length === 0) return;
+    if (listings.length === 0) return;
 
     const latestTimestamp = listings[0].created_at;
 
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('listings')
-        .select('*');
-
-      if (selectedCity !== 'All Cities') {
-        query = query.eq('city', selectedCity);
-      }
-
-      const { data, error } = await query
+        .select('*')
         .gt('created_at', latestTimestamp)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       if (data && data.length > 0) {
-        console.log(`Polled ${data.length} new listings in Search`);
+        console.log(`Polled ${data.length} new listings`);
+
+        // Track new IDs for animation
+        const newIds = new Set(data.map((l: Listing) => l.id));
+        setNewListingIds(prev => new Set([...Array.from(prev), ...Array.from(newIds)]));
+
         setListings(prev => [...data, ...prev]);
+
+        // Remove animation class after some time
+        setTimeout(() => {
+          setNewListingIds(prev => {
+            const next = new Set(prev);
+            newIds.forEach(id => next.delete(id));
+            return next;
+          });
+        }, 2000);
       }
     } catch (err) {
       console.error('Error polling new listings:', err);
@@ -87,15 +96,9 @@ export default function Listings() {
 
   const fetchListings = async () => {
     setLoading(true);
-    let query = supabase
+    const { data, error } = await supabase
       .from('listings')
-      .select('*');
-
-    if (selectedCity !== 'All Cities') {
-      query = query.eq('city', selectedCity);
-    }
-
-    const { data, error } = await query
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -104,10 +107,8 @@ export default function Listings() {
     setLoading(false);
   };
 
-  // Realtime Subscription
+  // Realtime Subscription (as fallback/double-check)
   useEffect(() => {
-    if (!selectedCity) return;
-
     const channel = supabase
       .channel('listings-search-changes')
       .on(
@@ -119,9 +120,20 @@ export default function Listings() {
         },
         (payload) => {
           const newListing = payload.new as Listing;
-          if (selectedCity === 'All Cities' || newListing.city === selectedCity) {
-            setListings(prev => [newListing, ...prev]);
-          }
+          // Check if we already have it from polling
+          setListings(prev => {
+            if (prev.some(l => l.id === newListing.id)) return prev;
+
+            setNewListingIds(ids => new Set([...Array.from(ids), newListing.id]));
+            setTimeout(() => {
+              setNewListingIds(ids => {
+                const next = new Set(ids);
+                next.delete(newListing.id);
+                return next;
+              });
+            }, 2000);
+            return [newListing, ...prev];
+          });
         }
       )
       .subscribe();
@@ -129,18 +141,27 @@ export default function Listings() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedCity]);
+  }, []);
 
   const categories = ['All', 'Have', 'Need'];
 
   const filteredListings = listings.filter(l => {
+    // 1. City Filter (Client Side)
+    const matchesCity = !selectedCity || selectedCity === 'All Cities' || l.city === selectedCity;
+    if (!matchesCity) return false;
+
+    // 2. Search Filter
     const term = debouncedSearch.toLowerCase();
     const matchesSearch = l.title.toLowerCase().includes(term) ||
       l.description.toLowerCase().includes(term) ||
       (l.county && l.county.toLowerCase().includes(term));
 
+    // 3. Category Filter
     const matchesCategory = selectedCategory === 'All' || l.category === selectedCategory;
+
+    // 4. Area Filter
     const matchesArea = selectedArea === 'All Areas' || l.county === selectedArea;
+
     return matchesSearch && matchesCategory && matchesArea;
   });
 
@@ -205,7 +226,11 @@ export default function Listings() {
           </div>
         ) : (
           filteredListings.map(listing => (
-            <RoomShareCard key={listing.id} listing={listing} />
+            <RoomShareCard
+              key={listing.id}
+              listing={listing}
+              isNew={newListingIds.has(listing.id)}
+            />
           ))
         )}
       </div>

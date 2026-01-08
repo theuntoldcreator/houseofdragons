@@ -13,19 +13,28 @@ interface RoomShareCardProps {
         contact_name: string;
         contact_email: string;
         telegram_username?: string;
+        contact_info?: string;
+        preferred_contact?: string;
         created_at: string;
         views?: number;
     };
+    isNew?: boolean;
 }
 
-export default function RoomShareCard({ listing }: RoomShareCardProps) {
-    const formattedDate = new Date(listing.created_at).toLocaleDateString(undefined, {
+export default function RoomShareCard({ listing, isNew }: RoomShareCardProps) {
+    const date = new Date(listing.created_at);
+    const formattedDate = date.toLocaleDateString(undefined, {
         month: 'short',
         day: 'numeric'
     });
+    const formattedTime = date.toLocaleTimeString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
 
     return (
-        <Link to={`/listings/${listing.id}`} className="block group">
+        <Link to={`/listings/${listing.id}`} className={`block group ${isNew ? 'animate-new-item' : ''}`}>
             <div className="flex items-center px-4 py-3 hover:bg-zinc-50 border-b border-zinc-100 transition-colors">
                 {/* Column 1: Title & Category */}
                 <div className="flex-1 min-w-0 pr-4">
@@ -57,10 +66,15 @@ export default function RoomShareCard({ listing }: RoomShareCardProps) {
                 </div>
 
                 {/* Column 4: Timestamp */}
-                <div className="w-[60px] sm:w-[80px] text-right ml-4">
-                    <p className="text-[12px] font-bold text-zinc-400 uppercase tracking-tighter whitespace-nowrap">
-                        {formattedDate}
-                    </p>
+                <div className="w-[80px] sm:w-[100px] text-right ml-4">
+                    <div className="flex flex-col items-end">
+                        <p className="text-[11px] font-black text-zinc-400 uppercase tracking-tighter whitespace-nowrap leading-none">
+                            {formattedDate}
+                        </p>
+                        <p className="text-[9px] font-medium text-zinc-300 uppercase tracking-widest whitespace-nowrap mt-1">
+                            {formattedTime}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Actions Icon */}

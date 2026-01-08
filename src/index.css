@@ -89,3 +89,26 @@
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Animation for new listings */
+.animate-new-item {
+  animation: newItemFade 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes newItemFade {
+  0% {
+    background-color: #f0f9ff;
+    transform: translateX(-4px);
+    opacity: 0.5;
+  }
+
+  20% {
+    background-color: #e0f2fe;
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
