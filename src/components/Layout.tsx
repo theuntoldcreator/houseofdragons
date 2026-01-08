@@ -32,11 +32,16 @@ export default function Layout() {
 
     const fetchActiveAreas = async () => {
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('listings')
                 .select('county')
-                .eq('city', selectedCity)
                 .not('county', 'is', null);
+
+            if (selectedCity !== 'All Cities') {
+                query = query.eq('city', selectedCity);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 

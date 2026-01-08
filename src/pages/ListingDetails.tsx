@@ -16,6 +16,8 @@ interface Listing {
     contact_name: string;
     contact_email: string;
     telegram_username?: string;
+    preferred_contact?: 'email' | 'telegram';
+    contact_info?: string;
     views?: number;
 }
 
@@ -207,6 +209,53 @@ export default function ListingDetails() {
                     </div>
                 </div>
 
+                {/* Intelligent Contact Section */}
+                <div className="pb-6 mb-2">
+                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Contact Details</p>
+                    {(() => {
+                        const info = listing.contact_info || listing.telegram_username || listing.contact_email;
+                        if (!info) return <p className="text-secondary font-medium">No contact provided</p>;
+
+                        let href = '';
+                        let type = 'Contact';
+                        const cleanInfo = info.replace(/\s/g, '');
+
+                        if (info.includes('@') && info.includes('.')) {
+                            href = `mailto:${info}`;
+                            type = 'Email';
+                        } else if (/^\+?[\d\s-]{10,}$/.test(cleanInfo)) {
+                            href = `tel:${cleanInfo}`;
+                            type = 'Phone';
+                        } else {
+                            const tgUsername = info.startsWith('@') ? info.substring(1) : info;
+                            href = `https://t.me/${tgUsername}`;
+                            type = 'Telegram';
+                        }
+
+                        return (
+                            <a
+                                href={href}
+                                target={type === 'Telegram' ? "_blank" : undefined}
+                                rel={type === 'Telegram' ? "noopener noreferrer" : undefined}
+                                className="flex items-center gap-3 w-fit group"
+                            >
+                                <div className={`p-3 rounded-2xl transition-all group-hover:scale-110 ${type === 'Email' ? 'bg-black text-white' :
+                                        type === 'Phone' ? 'bg-green-500 text-white' :
+                                            'bg-[#0088cc] text-white'
+                                    }`}>
+                                    {type === 'Email' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>}
+                                    {type === 'Phone' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>}
+                                    {type === 'Telegram' && <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.53-1.39.51-.46-.01-1.33-.26-1.98-.48-.8-.27-1.43-.42-1.37-.89.03-.25.38-.51 1.03-.78 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.19z" /></svg>}
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[16px] font-black text-[#101010] group-hover:text-blue-600 transition-colors uppercase tracking-tight">{info}</span>
+                                    <span className="text-[11px] font-bold text-zinc-400 group-hover:text-blue-400 transition-colors uppercase tracking-widest">Connect via {type}</span>
+                                </div>
+                            </a>
+                        );
+                    })()}
+                </div>
+
                 {/* Map Section */}
                 <div className="mb-8 rounded-3xl overflow-hidden border border-zinc-100 shadow-sm h-[200px] relative z-0">
                     <MapContainer
@@ -246,35 +295,16 @@ export default function ListingDetails() {
                     </div>
                 </div>
 
-                {/* Contact Bar - Dual Buttons */}
+                {/* Action Bar */}
                 <div className="flex flex-col gap-3 pt-6 border-t border-zinc-50">
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => setShowDeleteModal(true)}
-                            className="flex items-center justify-center p-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-400 hover:text-red-500 rounded-[18px] transition-all border border-zinc-100"
-                        >
-                            <Trash2 size={20} />
-                        </button>
-                        <a
-                            href={`mailto:${listing.contact_email}`}
-                            className="flex-1 bg-black text-white font-black text-[15px] py-4 rounded-[18px] hover:opacity-90 shadow-lg shadow-black/5 flex items-center justify-center transition-all active:scale-[0.98]"
-                        >
-                            Email Seller
-                        </a>
-                    </div>
-                    {listing.telegram_username && (
-                        <a
-                            href={`https://t.me/${listing.telegram_username.replace('@', '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full bg-[#0088cc] text-white font-black text-[15px] py-4 rounded-[18px] hover:opacity-90 shadow-lg shadow-[#0088cc]/10 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.53-1.39.51-.46-.01-1.33-.26-1.98-.48-.8-.27-1.43-.42-1.37-.89.03-.25.38-.51 1.03-.78 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.19z" />
-                            </svg>
-                            Telegram Seller
-                        </a>
-                    )}
+                    <button
+                        onClick={() => setShowDeleteModal(true)}
+                        className="flex items-center justify-center gap-2 p-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-400 hover:text-red-500 rounded-[18px] transition-all border border-zinc-100 font-bold text-[14px]"
+                    >
+                        <Trash2 size={18} />
+                        Delete Listing
+                    </button>
+                    <p className="text-[10px] text-zinc-300 text-center font-bold uppercase tracking-widest mt-2 cursor-default select-none">House of Dragons</p>
                 </div>
             </main>
         </div>

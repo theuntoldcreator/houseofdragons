@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS public.listings (
     city TEXT NOT NULL,
     county TEXT,
     contact_name TEXT,
-    contact_email TEXT NOT NULL,
+    contact_email TEXT,
     telegram_username TEXT,
+    preferred_contact TEXT DEFAULT 'email',
+    contact_info TEXT,
     views INTEGER DEFAULT 0
 );
 

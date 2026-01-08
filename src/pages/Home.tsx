@@ -39,7 +39,7 @@ export default function Home() {
 
     const interval = setInterval(() => {
       pollNewListings();
-    }, 180000); // 3 minutes
+    }, 15000); // 15 seconds
 
     return () => clearInterval(interval);
   }, [selectedCity, listings]);
@@ -50,10 +50,15 @@ export default function Home() {
     const latestTimestamp = listings[0].created_at;
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
-        .select('*')
-        .eq('city', selectedCity)
+        .select('*');
+
+      if (selectedCity !== 'All Cities') {
+        query = query.eq('city', selectedCity);
+      }
+
+      const { data, error } = await query
         .gt('created_at', latestTimestamp)
         .order('created_at', { ascending: false });
 
@@ -80,10 +85,15 @@ export default function Home() {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
-        .select('*')
-        .eq('city', selectedCity)
+        .select('*');
+
+      if (selectedCity !== 'All Cities') {
+        query = query.eq('city', selectedCity);
+      }
+
+      const { data, error } = await query
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -94,6 +104,34 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // Realtime Subscription
+  useEffect(() => {
+    if (!selectedCity) return;
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'listings'
+        },
+        (payload) => {
+          const newListing = payload.new as Listing;
+          // Only add if it matches the city or if we are in "All Cities" mode
+          if (selectedCity === 'All Cities' || newListing.city === selectedCity) {
+            setListings(prev => [newListing, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedCity]);
 
   const [viewerCount, setViewerCount] = useState(Math.floor(Math.random() * (750 - 450 + 1) + 450));
   const [sessionStartTime] = useState(Date.now());

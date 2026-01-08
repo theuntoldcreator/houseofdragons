@@ -63,6 +63,22 @@ export default function LocationModal({ isOpen, onClose, onSelect }: LocationMod
 
         <div className="overflow-y-auto px-4 pb-8 hide-scrollbar">
           <div className="flex flex-col gap-2">
+            <button
+              onClick={() => handleSelect('All Cities')}
+              className="flex items-center justify-between w-full p-4 rounded-2xl hover:bg-zinc-50 transition-all group border border-transparent hover:border-zinc-100"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-black flex items-center justify-center rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-black/10">
+                  <MapPin className="text-white" size={24} />
+                </div>
+                <div className="text-left">
+                  <p className="font-bold text-lg text-[#101010]">All Cities</p>
+                  <p className="text-xs text-secondary font-medium">View every listing everywhere</p>
+                </div>
+              </div>
+              <ChevronRight className="text-zinc-300 group-hover:text-black group-hover:translate-x-1 transition-all" />
+            </button>
+
             {filteredLocations.length > 0 ? (
               filteredLocations.map((loc) => (
                 <div key={loc.city} className="contents">

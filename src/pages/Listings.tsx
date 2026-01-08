@@ -12,7 +12,9 @@ interface Listing {
   category: string;
   city: string;
   county?: string;
+  contact_name: string;
   contact_email: string;
+  telegram_username?: string;
   created_at: string;
   views?: number;
 }
@@ -49,7 +51,7 @@ export default function Listings() {
 
     const interval = setInterval(() => {
       pollNewListings();
-    }, 180000); // 3 minutes
+    }, 15000); // 15 seconds
 
     return () => clearInterval(interval);
   }, [selectedCity, listings]);
@@ -60,10 +62,15 @@ export default function Listings() {
     const latestTimestamp = listings[0].created_at;
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
-        .select('*')
-        .eq('city', selectedCity)
+        .select('*');
+
+      if (selectedCity !== 'All Cities') {
+        query = query.eq('city', selectedCity);
+      }
+
+      const { data, error } = await query
         .gt('created_at', latestTimestamp)
         .order('created_at', { ascending: false });
 
@@ -80,10 +87,15 @@ export default function Listings() {
 
   const fetchListings = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    let query = supabase
       .from('listings')
-      .select('*')
-      .eq('city', selectedCity)
+      .select('*');
+
+    if (selectedCity !== 'All Cities') {
+      query = query.eq('city', selectedCity);
+    }
+
+    const { data, error } = await query
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -91,6 +103,33 @@ export default function Listings() {
     }
     setLoading(false);
   };
+
+  // Realtime Subscription
+  useEffect(() => {
+    if (!selectedCity) return;
+
+    const channel = supabase
+      .channel('listings-search-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'listings'
+        },
+        (payload) => {
+          const newListing = payload.new as Listing;
+          if (selectedCity === 'All Cities' || newListing.city === selectedCity) {
+            setListings(prev => [newListing, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedCity]);
 
   const categories = ['All', 'Have', 'Need'];
 

@@ -30,8 +30,7 @@ export default function PostListing() {
     city: localStorage.getItem('selected_city') || 'Dallas',
     county: '',
     contact_name: '',
-    contact_email: '',
-    telegram_username: ''
+    contact_info: ''
   });
 
   const filteredAreas = useMemo(() => {
@@ -74,7 +73,7 @@ export default function PostListing() {
   const isFormComplete = formData.title.trim() !== '' &&
     formData.description.trim() !== '' &&
     formData.contact_name.trim() !== '' &&
-    formData.contact_email.trim() !== '';
+    formData.contact_info.trim() !== '';
 
   const canPost = isFormComplete && !hasForbiddenContent;
 
@@ -97,8 +96,7 @@ export default function PostListing() {
             city: formData.city,
             county: formData.county,
             contact_name: formData.contact_name,
-            contact_email: formData.contact_email,
-            telegram_username: formData.telegram_username
+            contact_info: formData.contact_info
           }
         ])
         .select();
@@ -325,11 +323,12 @@ export default function PostListing() {
         </div>
 
         {/* Your Contact */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            <p className="font-bold text-[13px] text-zinc-400 uppercase tracking-widest">Your Contact</p>
+            <p className="font-bold text-[13px] text-zinc-400 uppercase tracking-widest">How to connect?</p>
           </div>
+
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Full Name</span>
@@ -340,31 +339,22 @@ export default function PostListing() {
                 placeholder="What should they call you?"
                 value={formData.contact_name}
                 onChange={handleChange}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300 shadow-sm"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Email Details</span>
-              <input
-                type="email"
-                name="contact_email"
-                required
-                placeholder="Where should they reach you?"
-                value={formData.contact_email}
-                onChange={handleChange}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Telegram Handle (Optional)</span>
+
+            <div className="flex flex-col gap-1.5 animate-in slide-in-from-bottom duration-300">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Contact Details (Email, Phone or Telegram)</span>
               <input
                 type="text"
-                name="telegram_username"
-                placeholder="@username (without @)"
-                value={formData.telegram_username}
+                name="contact_info"
+                required
+                placeholder="e.g. name@mail.com, +1 123..., or @username"
+                value={formData.contact_info}
                 onChange={handleChange}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300 shadow-sm focus:border-blue-200 transition-all"
               />
+              <p className="text-[11px] text-zinc-400 italic mt-1 px-1">We'll automatically make this a link for people to connect with you.</p>
             </div>
           </div>
         </div>
