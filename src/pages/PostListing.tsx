@@ -29,7 +29,9 @@ export default function PostListing() {
     description: '',
     city: localStorage.getItem('selected_city') || 'Dallas',
     county: '',
-    contact_email: ''
+    contact_name: '',
+    contact_email: '',
+    telegram_username: ''
   });
 
   const filteredAreas = useMemo(() => {
@@ -71,6 +73,7 @@ export default function PostListing() {
 
   const isFormComplete = formData.title.trim() !== '' &&
     formData.description.trim() !== '' &&
+    formData.contact_name.trim() !== '' &&
     formData.contact_email.trim() !== '';
 
   const canPost = isFormComplete && !hasForbiddenContent;
@@ -93,7 +96,9 @@ export default function PostListing() {
             category: selection.category,
             city: formData.city,
             county: formData.county,
-            contact_email: formData.contact_email
+            contact_name: formData.contact_name,
+            contact_email: formData.contact_email,
+            telegram_username: formData.telegram_username
           }
         ])
         .select();
@@ -325,17 +330,42 @@ export default function PostListing() {
             <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
             <p className="font-bold text-[13px] text-zinc-400 uppercase tracking-widest">Your Contact</p>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Email Details</span>
-            <input
-              type="email"
-              name="contact_email"
-              required
-              placeholder="Where should they reach you?"
-              value={formData.contact_email}
-              onChange={handleChange}
-              className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
-            />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Full Name</span>
+              <input
+                type="text"
+                name="contact_name"
+                required
+                placeholder="What should they call you?"
+                value={formData.contact_name}
+                onChange={handleChange}
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Email Details</span>
+              <input
+                type="email"
+                name="contact_email"
+                required
+                placeholder="Where should they reach you?"
+                value={formData.contact_email}
+                onChange={handleChange}
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase pl-1">Telegram Handle (Optional)</span>
+              <input
+                type="text"
+                name="telegram_username"
+                placeholder="@username (without @)"
+                value={formData.telegram_username}
+                onChange={handleChange}
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-[16px] font-bold outline-none placeholder:text-zinc-300"
+              />
+            </div>
           </div>
         </div>
       </form>

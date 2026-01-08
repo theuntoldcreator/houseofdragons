@@ -10,7 +10,9 @@ interface RoomShareCardProps {
         category: string;
         city: string;
         county?: string;
+        contact_name: string;
         contact_email: string;
+        telegram_username?: string;
         created_at: string;
         views?: number;
     };

@@ -13,8 +13,9 @@ interface Listing {
     description: string;
     price?: string;
     created_at: string;
-    contact_name?: string;
-    contact_email?: string;
+    contact_name: string;
+    contact_email: string;
+    telegram_username?: string;
     views?: number;
 }
 
@@ -47,11 +48,18 @@ export default function ListingDetails() {
 
         if (!error && data) {
             setListing(data);
-            // Increment views
-            await supabase
-                .from('listings')
-                .update({ views: (data.views || 0) + 1 })
-                .eq('id', listingId);
+
+            // Increment views uniquely by IP
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const { ip } = await ipResponse.json();
+                await supabase.rpc('increment_views', {
+                    listing_id: listingId,
+                    user_ip: ip
+                });
+            } catch (ipErr) {
+                console.warn('Failed to track view by IP:', ipErr);
+            }
         }
         setLoading(false);
     };
@@ -186,10 +194,16 @@ export default function ListingDetails() {
                     {listing.title}
                 </h1>
 
-                <div className="py-2 border-y border-zinc-50 mb-6">
-                    <div>
-                        <p className="font-black text-[#101010] leading-none mb-1">{listing.county || `Around ${listing.city}`}</p>
-                        <p className="text-[13px] font-bold text-zinc-400">{listing.county ? `Around ${listing.city}` : 'Location Area'}</p>
+                <div className="py-4 border-y border-zinc-50 mb-6 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Posted By</p>
+                            <p className="font-bold text-[16px] text-[#101010]">{listing.contact_name || 'Anonymous'}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Location</p>
+                            <p className="font-bold text-[16px] text-[#101010]">{listing.county || listing.city}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -232,20 +246,35 @@ export default function ListingDetails() {
                     </div>
                 </div>
 
-                {/* Contact Bar - No longer fixed for tighter spacing */}
-                <div className="flex gap-3 pt-6 border-t border-zinc-50">
-                    <button
-                        onClick={() => setShowDeleteModal(true)}
-                        className="flex items-center justify-center p-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-400 hover:text-red-500 rounded-[18px] transition-all border border-zinc-100"
-                    >
-                        <Trash2 size={20} />
-                    </button>
-                    <a
-                        href={`mailto:${listing.contact_email}`}
-                        className="flex-1 bg-black text-white font-black text-[15px] py-4 rounded-[18px] hover:opacity-90 shadow-lg shadow-black/5 flex items-center justify-center transition-all active:scale-[0.98]"
-                    >
-                        Contact Seller
-                    </a>
+                {/* Contact Bar - Dual Buttons */}
+                <div className="flex flex-col gap-3 pt-6 border-t border-zinc-50">
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowDeleteModal(true)}
+                            className="flex items-center justify-center p-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-400 hover:text-red-500 rounded-[18px] transition-all border border-zinc-100"
+                        >
+                            <Trash2 size={20} />
+                        </button>
+                        <a
+                            href={`mailto:${listing.contact_email}`}
+                            className="flex-1 bg-black text-white font-black text-[15px] py-4 rounded-[18px] hover:opacity-90 shadow-lg shadow-black/5 flex items-center justify-center transition-all active:scale-[0.98]"
+                        >
+                            Email Seller
+                        </a>
+                    </div>
+                    {listing.telegram_username && (
+                        <a
+                            href={`https://t.me/${listing.telegram_username.replace('@', '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full bg-[#0088cc] text-white font-black text-[15px] py-4 rounded-[18px] hover:opacity-90 shadow-lg shadow-[#0088cc]/10 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.53-1.39.51-.46-.01-1.33-.26-1.98-.48-.8-.27-1.43-.42-1.37-.89.03-.25.38-.51 1.03-.78 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.19z" />
+                            </svg>
+                            Telegram Seller
+                        </a>
+                    )}
                 </div>
             </main>
         </div>

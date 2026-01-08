@@ -1,0 +1,134 @@
+{
+    "name": "House of Dragons - Telegram Sync (Contact Support)",
+    "nodes": [
+        {
+            "parameters": {
+                "updates": [
+                    "message"
+                ],
+                "additionalFields": {}
+            },
+            "id": "e6f49f48-a9da-419b-9076-9c7f66ed7604",
+            "name": "Telegram Trigger",
+            "type": "n8n-nodes-base.telegramTrigger",
+            "typeVersion": 1,
+            "position": [
+                380,
+                240
+            ],
+            "credentials": {
+                "telegramApi": {
+                    "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+                    "name": "Telegram Bot"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "google/gemini-pro",
+                "prompt": "={{ $json.message.text }}",
+                "systemPrompt": "You are a precise housing data extractor for the website 'House of Dragons'. Your goal is to parse Telegram messages into a specific JSON format that matches the website's 'Title Builder' logic.\n\n### EXTRACTION RULES:\n1. CATEGORY: Detect if the user is offering a room ('Have') or seeking one ('Need').\n2. ROOM TYPE: Map to one of ['1bed/1bath', '2bed/1bath', '2bed/2bath', '3bed/2bath', '3bed/3bath', 'Studio']. Default to '1bed/1bath'.\n3. STAY TYPE: Map to one of ['Private Room', 'Shared Room', 'Entire Place']. Default to 'Private Room'.\n4. PROPERTY TYPE: Map to one of ['Apartment', 'House', 'Condo', 'Villa', 'Townhouse']. Default to 'Apartment'.\n5. CITY: Extract the city (e.g., Dallas, Irving, Austin, Houston). Default to 'Dallas'.\n6. COUNTY/AREA: Extract the specific neighborhood or area (e.g., Las Colinas, Coppell, Valley Ranch).\n7. CONTACT: Extract an email if present. If not, return an empty string.\n\n### TITLE CONSTRUCTION:\nConstruct the 'title' field EXACTLY like this:\n- If category is 'Have': 'Available {RoomType} {StayType} in {Area or City}'\n- If category is 'Need': 'Looking for {RoomType} {StayType} in {Area or City}'\n\n### OUTPUT FORMAT (JSON ONLY):\n{\n  \"title\": \"constructed title\",\n  \"description\": \"the full original message text\",\n  \"category\": \"Have\" or \"Need\",\n  \"city\": \"extracted city\",\n  \"county\": \"extracted area\",\n  \"contact_email\": \"extracted email\"\n}",
+                "options": {
+                    "temperature": 0.1
+                }
+            },
+            "id": "c1f7a1b2-1b2c-4d3e-8f9g-0h1i2j3k4l5m",
+            "name": "AI Parser (Title Builder)",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1.1,
+            "position": [
+                600,
+                240
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_AI_CREDENTIAL_ID",
+                    "name": "AI Service"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": "listings",
+                "columns": "title, description, category, city, county, contact_email, contact_name, telegram_username",
+                "mappingMode": "defineBelow",
+                "valueToInsert": [
+                    {
+                        "column": "title",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.title }}"
+                    },
+                    {
+                        "column": "description",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.description }}"
+                    },
+                    {
+                        "column": "category",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.category }}"
+                    },
+                    {
+                        "column": "city",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.city }}"
+                    },
+                    {
+                        "column": "county",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.county }}"
+                    },
+                    {
+                        "column": "contact_email",
+                        "value": "={{ $node[\"AI Parser (Title Builder)\"].json.contact_email || 'telegram-dm@example.com' }}"
+                    },
+                    {
+                        "column": "contact_name",
+                        "value": "={{ $node[\"Telegram Trigger\"].json.message.from.first_name + ' ' + ($node[\"Telegram Trigger\"].json.message.from.last_name || '') }}"
+                    },
+                    {
+                        "column": "telegram_username",
+                        "value": "={{ $node[\"Telegram Trigger\"].json.message.from.username }}"
+                    }
+                ]
+            },
+            "id": "d2e3f4g5-h6i7-j8k9-l0m1-n2o3p4q5r6s7",
+            "name": "Supabase Insert",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                820,
+                240
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Telegram Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "AI Parser (Title Builder)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Parser (Title Builder)": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase Insert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {},
+    "hash": "...",
+    "id": "..."
+}
